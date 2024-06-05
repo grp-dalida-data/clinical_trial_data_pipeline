@@ -1,0 +1,6 @@
+name: grp_dalida_data_clinical_trial_data_pipeline
+channel:
+  - defaults
+dependencies:
+  python=3.10
+  
