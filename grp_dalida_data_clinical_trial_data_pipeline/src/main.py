@@ -29,7 +29,7 @@ def main():
     logger = setup_logger(__name__)
     api_client = APIClient(API_BASE_URL)
     extractor = EntityExtractor()
-    data_pipeline = DataPipeline("clinical_trial_pipeline", "duckdb", "clinical_trial_data")
+    data_pipeline = DataPipeline("clinical_trial_pipeline", "duckdb", DUCKDB_FILE_PATH, DUCKDB_FILE_PATH)
 
     params = {
         'pageSize': 1000,

@@ -11,12 +11,13 @@ def load_config():
 config = load_config()
 duckdb_file_path = config.get('duckdb_file_path')
 
-import dlt
 from dlt import pipeline as dlt_pipeline
+import dlt
 
 class DataPipeline:
-    def __init__(self, pipeline_name, destination, dataset_name):
-        self.pipeline = dlt_pipeline(pipeline_name=pipeline_name, destination=dlt.destinations.duckdb(duckdb_file_path), dataset_name=dataset_name)
+    def __init__(self, pipeline_name, destination, dataset_name, db_file_path):
+        self.pipeline = dlt_pipeline(pipeline_name=pipeline_name, destination=dlt.destinations.duckdb(credentials=db_file_path), dataset_name=dataset_name, credentials={"path": db_file_path})
 
     def load_data(self, data, table_name):
-        self.pipeline.run(data, table_name=table_name)
+        qualified_table_name = f"{self.pipeline.dataset_name}.{table_name}"
+        self.pipeline.run(data, table_name=qualified_table_name)

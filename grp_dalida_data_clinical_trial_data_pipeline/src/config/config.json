@@ -1,5 +1,5 @@
 {
-    "duckdb_file_path": "src/data/clinical_trial_data.duckdb",
+    "duckdb_file_path": "data/clinical_trial_data.duckdb",
     "api_base_url": "https://clinicaltrials.gov/api/v2/studies",
     "target_statuses": ["APPROVED_FOR_MARKETING","AVAILABLE","ENROLLING_BY_INVITATION"]
 }
