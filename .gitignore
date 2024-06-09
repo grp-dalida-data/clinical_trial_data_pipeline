@@ -166,3 +166,4 @@ clinical_trial_data_pipeline/src/.DS_Store
 docs/.DS_Store
 docs/material/.DS_Store
 clinical_trial_data_pipeline/src/models/.user.yml
+clinical_trial_data_pipeline/src/data/clinical_trial_data.duckdb
