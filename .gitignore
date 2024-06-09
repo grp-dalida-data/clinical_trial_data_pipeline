@@ -161,7 +161,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .DS_Store
-grp_dalida_data_clinical_trial_data_pipeline/src/.DS_Store
+clinical_trial_data_pipeline/src/.DS_Store
 .vscode/settings.json
 docs/.DS_Store
 docs/material/.DS_Store
+clinical_trial_data_pipeline/src/models/.user.yml
