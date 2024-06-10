@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: clinical_trial_data
+    schema: data_clinical_trial_data_duckdb
+    tables:
+      - name: studies
+      - name: filtered_studies

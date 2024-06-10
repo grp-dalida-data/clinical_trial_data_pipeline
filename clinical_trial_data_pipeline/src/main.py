@@ -10,6 +10,10 @@ from utils.data_pipeline import DataPipeline
 from utils.logger import setup_logger
 from utils.age_utils import normalize_ages
 
+from dotenv import load_dotenv
+# Load environment variables from the .env file
+load_dotenv()
+
 # Function to load config
 def load_config():
     config_path = os.path.join(os.path.dirname(__file__), 'config', 'config.json')
@@ -28,8 +32,9 @@ def filter_studies_by_status(studies_data, target_statuses):
 def main():
     logger = setup_logger(__name__)
     api_client = APIClient(API_BASE_URL)
-    extractor = EntityExtractor()
-    data_pipeline = DataPipeline("clinical_trial_pipeline", "duckdb", DUCKDB_FILE_PATH, DUCKDB_FILE_PATH)
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    extractor = EntityExtractor(use_gpt=False, openai_api_key=openai_api_key)
+    data_pipeline = DataPipeline("clinical_trial_pipeline", DUCKDB_FILE_PATH, DUCKDB_FILE_PATH)
 
     params = {
         'pageSize': 1000,
@@ -42,7 +47,9 @@ def main():
     overall_start_time = time.time()
     logger.info('Started to Extract Data from ClinicalTrial.Gov API')
 
-    while True:
+    
+    while page <= 5: # For testing faster, putting max page of api pagination, for demo purpose
+    # while True: # For fetching all studies data
         logger.info(f'--- page: {page} ---')
         
         try:
@@ -142,8 +149,15 @@ def main():
     for study in tqdm(filtered_studies, desc="Processing filtered studies"):
         eligibilityCriteria = study['eligibilityCriteria']
         diseases_medications = extractor.extract_specific_entities(eligibilityCriteria)
-        study['diseases'] = diseases_medications.get('diseases', '[]')
-        study['medications'] = diseases_medications.get('medications', '[]')
+        diseases = diseases_medications.get('diseases', '')  # Directly assign the highest-scoring entity
+        medications = diseases_medications.get('medications', '')  # Directly assign the highest-scoring entity
+        study['diseases'] = diseases
+        study['medications'] = medications
+        
+
+    logger.info('Sample transformed study data:')
+    logger.info(filtered_studies[0])  # Log the first item for verification
+
     logger.info('Finished Extracting Entity diseases and medications.')
 
     logger.info('Loading studies data to duckdb as table name studies')

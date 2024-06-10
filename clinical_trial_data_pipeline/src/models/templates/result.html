@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Similarity Result</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+<body>
+    <main>
+        <div class="container">
+            <h1>Most Similar Clinical Trial</h1>
+            <p><strong>NCT ID:</strong> {{ nct_id }}</p>
+            <p><strong>Brief Title:</strong> {{ brief_title }}</p>
+            <a href="/" class="button">Go back</a>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

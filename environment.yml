@@ -1,6 +1,21 @@
-name: grp_dalida_data_clinical_trial_data_pipeline
-channel:
-  - defaults
+name: clinical_trial_data_pipeline
+channels:
+  - conda-forge
 dependencies:
-  python=3.10
-  
+  - python=3.11.2
+  - dbt-core
+  - dbt-postgres
+  - flask
+  - duckdb
+  - transformers
+  - dotenv
+  - sentence-transformers
+  - pip
+  - apache-airflow
+  - pandas
+  - requests
+  - psutil
+  - pytest
+  - pip:
+      - apache-airflow
+      - dlt

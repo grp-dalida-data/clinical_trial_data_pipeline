@@ -15,9 +15,13 @@ from dlt import pipeline as dlt_pipeline
 import dlt
 
 class DataPipeline:
-    def __init__(self, pipeline_name, destination, dataset_name, db_file_path):
-        self.pipeline = dlt_pipeline(pipeline_name=pipeline_name, destination=dlt.destinations.duckdb(credentials=db_file_path), dataset_name=dataset_name, credentials={"path": db_file_path})
+    def __init__(self, pipeline_name, dataset_name, db_file_path):
+        self.pipeline = dlt_pipeline(
+            pipeline_name=pipeline_name,
+            destination=dlt.destinations.duckdb(credentials=db_file_path), 
+            dataset_name=dataset_name
+        )
 
     def load_data(self, data, table_name):
-        qualified_table_name = f"{self.pipeline.dataset_name}.{table_name}"
-        self.pipeline.run(data, table_name=qualified_table_name)
+        # Use the dataset name as the schema name
+        self.pipeline.run(data, table_name=table_name)

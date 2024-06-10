@@ -1,0 +1,78 @@
+import sys
+import os
+import json
+import torch
+import duckdb
+import torch.nn.functional as F
+from flask import Flask, request, render_template
+from transformers import AutoTokenizer, AutoModel
+from dotenv import load_dotenv
+
+# Add the src directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+try:
+    from utils.logger import setup_logger
+except ModuleNotFoundError as e:
+    print(f"Error importing logger: {e}")
+    sys.exit(1)
+
+# Load environment variables from .env file
+load_dotenv()
+
+logger = setup_logger(__name__)
+
+# Initialize Flask app
+app = Flask(__name__, template_folder='templates', static_folder='../static')
+
+# Load model from HuggingFace Hub
+tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/all-MiniLM-L6-v2')
+model = AutoModel.from_pretrained('sentence-transformers/all-MiniLM-L6-v2')
+
+# Mean Pooling - Take attention mask into account for correct averaging
+def mean_pooling(model_output, attention_mask):
+    token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
+# Function to compute sentence embeddings
+def compute_embeddings(sentences):
+    encoded_input = tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
+    with torch.no_grad():
+        model_output = model(**encoded_input)
+    sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
+    sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
+    return sentence_embeddings
+
+# Load the data from DuckDB
+db_file_path = os.getenv('DUCKDB_PATH')
+if not db_file_path:
+    logger.error("DUCKDB_PATH environment variable is not set.")
+    sys.exit(1)
+
+con = duckdb.connect(database=db_file_path)
+query = """
+SELECT nct_id, brief_title, criteria_embeddings
+FROM main_data_clinical_trial_data_duckdb.criteria_embeddings;
+"""
+df = con.execute(query).fetchdf()
+df['criteria_embeddings'] = df['criteria_embeddings'].apply(json.loads)
+stored_embeddings = torch.tensor(df['criteria_embeddings'].tolist())
+con.close()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/result', methods=['POST'])
+def result():
+    user_input_sentence = request.form['sentence']
+    user_input_embedding = compute_embeddings([user_input_sentence])
+    cosine_similarities = F.cosine_similarity(user_input_embedding.unsqueeze(1), stored_embeddings.unsqueeze(0), dim=2)
+    highest_similarity_idx = torch.argmax(cosine_similarities).item()  # Ensure this is an integer
+    most_similar_nct_id = df.iloc[highest_similarity_idx]['nct_id']
+    most_similar_brief_title = df.iloc[highest_similarity_idx]['brief_title']
+    return render_template('index.html', nct_id=most_similar_nct_id, brief_title=most_similar_brief_title)
+
+if __name__ == '__main__':
+    app.run(debug=True)

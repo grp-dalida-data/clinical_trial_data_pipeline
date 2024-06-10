@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Clinical Trial Similarity Search</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+<body>
+    <main>
+        <div class="container">
+            <h1>Patient Matching From Trials Protocols</h1>
+            <p>We match patients to trial protocols with precision and speed, providing a clear view of each match’s quality. Just search it below.</p>
+            <div class="search-wrapper">
+                <div class="input-holder">
+                    <form action="/result" method="post" class="search-form">
+                        <input type="text" name="sentence" class="search-input" placeholder="Enter patient details to find the best trial protocols." autocomplete="off" required />
+                        <button type="submit" class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
+                    </form>
+                </div>
+                <span class="close" onclick="searchToggle(this, event);"></span>
+            </div>
+            <div id="results">
+                {% if nct_id and brief_title %}
+                    <h2>Most Similar Trial</h2>
+                    <p><strong>NCT ID:</strong> {{ nct_id }}</p>
+                    <p><strong>Brief Title:</strong> {{ brief_title }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
