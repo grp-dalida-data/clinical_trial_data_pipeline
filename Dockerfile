@@ -25,12 +25,13 @@ RUN mkdir -p /usr/local/airflow/dags
 COPY clinical_trial_data_pipeline/src/dags /usr/local/airflow/dags
 
 # Expose the ports for Airflow web server and Flask
-EXPOSE 8080 8793 5000
+EXPOSE 8080 8793 5001
 
 # Set environment variables for Flask
 ENV FLASK_APP=/app/src/models/app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV AIRFLOW_HOME=/usr/local/airflow
+ENV DUCKDB_PATH=/app/src/data/clinical_trial_data.duckdb
 
 # Set the entry point for the container
 ENTRYPOINT ["conda", "run", "-n", "clinical_trial_data_pipeline", "sh", "-c"]

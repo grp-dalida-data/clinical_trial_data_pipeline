@@ -28,13 +28,14 @@ Before you begin, ensure you have met the following requirements:
    cd clinical_trial_data_pipeline
    ```
 
-2. **Clone the repository**:
+2. **Set up environment variables:**:
 
 ```sh
 DUCKDB_PATH=/app/src/data/clinical_trial_data.duckdb
+OPENAI_API_KEY=<api_key>
 ```
 
-## Build and start the Docker containers:
+3. **Build and start the Docker containers**:
 
 ```sh
 docker-compose build
@@ -43,7 +44,12 @@ docker-compose up
 docker-compose run airflow-webserver airflow db init
 ```
 
-3. **Clone the repository**:
+4. **Initialize the Airflow database**:
+```sh
+docker-compose run airflow-webserver airflow db init
+```
+
+Usage
 
 Access the Airflow UI:
 
