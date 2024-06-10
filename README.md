@@ -26,11 +26,13 @@ Before you begin, ensure you have met the following requirements:
    ```sh
    git clone https://github.com/grp-dalida-data/clinical_trial_data_pipeline.git
    cd clinical_trial_data_pipeline
+   ```
 
-## Create a .env file in the root directory with the following content:
+2. **Clone the repository**:
 
+```sh
 DUCKDB_PATH=/app/src/data/clinical_trial_data.duckdb
-
+```
 
 ## Build and start the Docker containers:
 
@@ -39,9 +41,9 @@ docker-compose build
 docker-compose up
 
 docker-compose run airflow-webserver airflow db init
+```
 
-
-Usage
+3. **Clone the repository**:
 
 Access the Airflow UI:
 
