@@ -47,7 +47,7 @@ docker-compose run airflow-webserver airflow db init
 
 Access the Airflow UI:
 
-Open your browser and navigate to http://localhost:8080 to access the Airflow webserver.
+Open your browser and navigate to http://localhost:8081 to access the Airflow webserver.
 
 Trigger the DAG:
 
@@ -58,4 +58,4 @@ Run DBT models to transform the data.
 Run generate_embeddings_and_load.py to generate and load embeddings.
 Access the Flask web application:
 
-Open your browser and navigate to http://localhost:5000 to access the Flask web application for patient-to-trial matching.
+Open your browser and navigate to http://localhost:5001 to access the Flask web application for patient-to-trial matching.
