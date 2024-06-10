@@ -53,7 +53,7 @@ Usage
 
 Access the Airflow UI:
 
-Open your browser and navigate to http://localhost:8081 to access the Airflow webserver.
+Open your browser and navigate to http://localhost:8080 to access the Airflow webserver.
 
 Trigger the DAG:
 
