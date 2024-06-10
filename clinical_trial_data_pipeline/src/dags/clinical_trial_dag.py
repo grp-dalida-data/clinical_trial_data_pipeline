@@ -28,7 +28,7 @@ default_args = {
 }
 
 parent_dag = DAG(
-    dag_id = "clinical_trial_pipeline_dag",
+    dag_id = "clinical_trial_dag",
     default_args=default_args,
     description='Clinical Trial Data Pipeline',
     schedule_interval='@monthly',
@@ -37,19 +37,31 @@ parent_dag = DAG(
 
 run_main_script = BashOperator(
     task_id='run_main_py',
-    bash_command='python ./clinical_trial_data_pipeline/opt/airflow/src/main.py',
+    bash_command='pip install tqdm && \
+        pip install dlt && \
+        pip install dlt[duckdb] && \
+        pip install transformers && \
+        pip install openai && \
+        pip install torch && \
+        ls /opt/airflow/src/data/ && \
+        python /opt/airflow/src/main.py',
     dag=parent_dag,
 )
 
 run_dbt = BashOperator(
     task_id='run_dbt',
-    bash_command='cd /opt/airflow/src/models/dbt_models && dbt run --models custom_eligibility_criteria.sql',
+    bash_command='pip install dbt-core && \
+    pip install dbt-duckdb &&\
+    cd /opt/airflow/src/models/dbt_models && \
+    dbt run --models custom_eligibility_criteria.sql --profiles-dir /opt/airflow/src/models',
     dag=parent_dag
 )
 
 run_generate_embeddings = BashOperator(
     task_id='run_generate_embeddings',
-    bash_command='python /opt/airflow/src/models/generate_embeddings_and_load.py',
+    bash_command='pip install sentence-transformers &&\
+        pip install dlt &&\
+        python /opt/airflow/src/models/generate_embeddings_and_load.py',
     dag=parent_dag,
 )
 

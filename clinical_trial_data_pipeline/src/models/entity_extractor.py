@@ -1,11 +1,13 @@
 from transformers import pipeline as hf_pipeline
+import openai
 from openai import OpenAI
-client = OpenAI()
 import os
 from dotenv import load_dotenv
-
 # Load environment variables from the .env file
 load_dotenv()
+# get the environment variable
+# openai.api_key = 'sk-xxxxxxxxxxxxxxxxxxxx'
+client = OpenAI(api_key = 'sk-xxxxxxxxxxxxxxxxxxxx')
 
 # Set your OpenAI API key
 client.api_key = os.getenv("OPENAI_API_KEY")

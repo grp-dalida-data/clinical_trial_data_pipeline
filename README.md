@@ -31,7 +31,7 @@ Before you begin, ensure you have met the following requirements:
 2. **Set up environment variables:**:
 
 ```sh
-DUCKDB_PATH=/app/src/data/clinical_trial_data.duckdb
+DUCKDB_PATH=/opt/airflow/src/data/clinical_trial_data.duckdb
 OPENAI_API_KEY=<api_key>
 ```
 

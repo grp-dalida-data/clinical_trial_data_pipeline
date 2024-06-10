@@ -1,18 +1,21 @@
 # Use the official Miniconda3 image
 FROM continuumio/miniconda3
 
-# Add conda to the path so we can execute it by name
-ENV PATH=/opt/conda/clinical_trial_data_pipeline/bin:$PATH
+# Set environment variables for Conda
+ENV CONDA_ENV=clinical_trial_data_pipeline
+ENV PATH /opt/conda/envs/$CONDA_ENV/bin:$PATH
 
-# Copy environment.yml to the Docker container
+# Copy environment.yml to create the Conda environment
 COPY environment.yml /tmp/environment.yml
 
-# Update conda and create the environment
-RUN conda update -n base conda -y && conda install -n base pip -y
+# Create the Conda environment
 RUN conda env create -f /tmp/environment.yml
 
-# Activate the environment
-RUN echo "conda activate clinical_trial_data_pipeline" >> ~/.bashrc
+# Initialize Conda and activate the environment
+RUN echo "source activate $CONDA_ENV" >> ~/.bashrc
+
+# Install necessary packages in the Conda environment
+RUN /bin/bash -c "source activate $CONDA_ENV && pip install apache-airflow==2.9.1 flask transformers torch duckdb tqdm dlt openai"
 
 # Set the working directory
 WORKDIR /app
@@ -20,27 +23,38 @@ WORKDIR /app
 # Copy the project files
 COPY clinical_trial_data_pipeline /app
 
-# Activate the conda environment and initialize the Airflow database
-RUN /bin/bash -c "source ~/.bashrc && conda activate clinical_trial_data_pipeline && airflow db init"
+# Initialize the Airflow database
+RUN /bin/bash -c "source activate $CONDA_ENV && airflow db init"
 
 # Create the necessary Airflow directories
-RUN mkdir -p /usr/local/airflow/dags
+RUN mkdir -p /opt/airflow/dags /opt/airflow/logs /opt/airflow/plugins
 
-# Copy the Airflow DAGs and src files
-COPY clinical_trial_data_pipeline/src/dags /usr/local/airflow/dags
-COPY clinical_trial_data_pipeline/src /usr/local/airflow/src
+RUN mkdir -p /opt/airflow/.dbt
 
-# Expose the ports for Airflow web server and Flask
-EXPOSE 8080 8793 5001
+# Copy the Airflow DAGs and other necessary files
+COPY clinical_trial_data_pipeline/src/dags /opt/airflow/dags
+COPY clinical_trial_data_pipeline/src /opt/airflow/src
+
+# Copy the .env file
+COPY .env /opt/.env
+COPY clinical_trial_data_pipeline/src/models/profiles.yml /opt/airflow/.dbt/profiles.yml
+
+# Load environment variables from .env file
+ARG OPENAI_API_KEY
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 # Set environment variables for Flask and Airflow
-ENV FLASK_APP=/app/src/models/app.py
+ENV FLASK_APP=/opt/airflow/src/models/app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV AIRFLOW_HOME=/usr/local/airflow
-ENV DUCKDB_PATH=/app/src/data/clinical_trial_data.duckdb
+ENV AIRFLOW_HOME=/opt/airflow
+ENV DUCKDB_PATH=/opt/airflow/src/data/clinical_trial_data.duckdb
+ENV DBT_HOME=/opt/airflow/.dbt
+
+# Expose the ports for Airflow web server, scheduler, and Flask
+EXPOSE 8080 8793 5002
 
 # Set the entry point for the container
 ENTRYPOINT ["/bin/bash", "-c"]
 
 # Command to start both Airflow scheduler, webserver, and Flask app
-CMD ["source ~/.bashrc && conda activate clinical_trial_data_pipeline && airflow scheduler & airflow webserver & flask run --host=0.0.0.0"]
+CMD ["source activate $CONDA_ENV && airflow scheduler & airflow webserver & flask run --host=0.0.0.0 --port=5002"]

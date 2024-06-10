@@ -44,28 +44,38 @@ def compute_embeddings(sentences):
     sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
     return sentence_embeddings
 
-# Load the data from DuckDB
-db_file_path = os.getenv('DUCKDB_PATH')
+# Check if the DuckDB file exists
+db_file_path = '/opt/airflow/src/data/patient_matching_db.duckdb'
 if not db_file_path:
-    logger.error("DUCKDB_PATH environment variable is not set.")
+    app.logger.error("DUCKDB_PATH environment variable is not set.")
     sys.exit(1)
 
-con = duckdb.connect(database=db_file_path)
-query = """
-SELECT nct_id, brief_title, criteria_embeddings
-FROM main_data_clinical_trial_data_duckdb.criteria_embeddings;
-"""
-df = con.execute(query).fetchdf()
-df['criteria_embeddings'] = df['criteria_embeddings'].apply(json.loads)
-stored_embeddings = torch.tensor(df['criteria_embeddings'].tolist())
-con.close()
+db_exists = os.path.exists(db_file_path)
+stored_embeddings = None
+
+if db_exists:
+    con = duckdb.connect(database=db_file_path)
+    query = """
+    SELECT nct_id, brief_title, criteria_embeddings
+    FROM main_data_clinical_trial_data_duckdb.criteria_embeddings;
+    """
+    df = con.execute(query).fetchdf()
+    df['criteria_embeddings'] = df['criteria_embeddings'].apply(json.loads)
+    stored_embeddings = torch.tensor(df['criteria_embeddings'].tolist())
+    con.close()
+else:
+    app.logger.warning("DuckDB file does not exist. The app will run without the data.")
 
 @app.route('/')
 def index():
+    if not db_exists:
+        return render_template('no_data.html')
     return render_template('index.html')
 
 @app.route('/result', methods=['POST'])
 def result():
+    if not db_exists:
+        return render_template('no_data.html', error="No data available")
     user_input_sentence = request.form['sentence']
     user_input_embedding = compute_embeddings([user_input_sentence])
     cosine_similarities = F.cosine_similarity(user_input_embedding.unsqueeze(1), stored_embeddings.unsqueeze(0), dim=2)
@@ -75,4 +85,4 @@ def result():
     return render_template('index.html', nct_id=most_similar_nct_id, brief_title=most_similar_brief_title)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv('FLASK_RUN_PORT', 5001)), debug=True)

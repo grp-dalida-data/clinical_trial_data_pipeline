@@ -27,9 +27,25 @@ load_dotenv()
 logger = setup_logger(__name__)
 
 # Get the DuckDB path from the environment variable
-db_file_path = os.getenv('DUCKDB_PATH')
+# Function to load config
+
+# Get the directory containing the current file
+current_dir = os.path.dirname(__file__)
+
+# Move one directory up
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+
+def load_config():
+    config_path = os.path.join(parent_dir, 'config', 'config.json')
+    with open(config_path, 'r') as file:
+        return json.load(file)
+
+config = load_config()
+
+DUCKDB_FILE_PATH = config.get('duckdb_file_path')
+db_file_path = config.get('duckdb_file_path')
 if not db_file_path:
-    print("DUCKDB_PATH environment variable is not set.")
+    print("DUCKDB_FILE_PATH environment variable is not set.")
     sys.exit(1)
 
 try:
@@ -38,7 +54,7 @@ try:
     con = duckdb.connect(database=db_file_path)
     query = """
     SELECT nct_id, brief_title, custom_criteria
-    FROM main_data_clinical_trial_data_duckdb.custom_eligibility_criteria;
+    FROM main_clinical_trial_data.custom_eligibility_criteria;
     """
     df = con.execute(query).fetchdf()
     logger.info('Data loaded from DuckDB')
@@ -59,7 +75,7 @@ try:
     data = df[['nct_id', 'brief_title', 'criteria_embeddings']].to_dict(orient='records')
 
     # Initialize the DataPipeline
-    pipeline = DataPipeline(pipeline_name="embedding_pipeline", db_file_path=db_file_path, dataset_name="main_data_clinical_trial_data_duckdb")
+    pipeline = DataPipeline(pipeline_name="embedding_pipeline", db_file_path=db_file_path, dataset_name="patient_matching_db")
 
     # Load data into DuckDB using DLT
     logger.info('Loading embeddings into DuckDB')

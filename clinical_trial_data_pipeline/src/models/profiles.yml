@@ -2,12 +2,12 @@ dbt_models:
   outputs:
     dev:
       type: duckdb
-      path: "{{ env_var('DUCKDB_PATH', 'src/data/duckdb.db') }}"
+      path: "/opt/airflow/src/data/clinical_trial_data.duckdb"
       threads: 1
 
     prod:
       type: duckdb
-      path: "{{ env_var('DUCKDB_PATH', 'src/data/duckdb.db') }}"
+      path: "/opt/airflow/src/data/clinical_trial_data.duckdb"
       threads: 4
 
   target: dev

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>No Data Available - Clinical Trials</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/favicon.png') }}" rel="icon" type="image/png">
+  <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon" type="image/x-icon">
+  <link href="{{ url_for('static', filename='img/favicon.svg') }}" rel="icon" type="image/svg+xml">
+
+  <!-- Main CSS File -->
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Ninestars
+  * Template URL: https://bootstrapmade.com/ninestars-free-bootstrap-3-theme-for-creative/
+  * Updated: Jun 06 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body class="index-page">
+  <main class="main">
+
+    <!-- No Data Section -->
+    <section id="no-data" class="section hero">
+      <div class="container">
+        <div class="search-wrapper">
+          <div class="col-lg-12 order-2 order-lg-1 d-flex flex-column center">
+            <h1>No Data Available Yet</h1>
+            <p>The DuckDB file is not available. Please check back later.</p>
+            <p>There needs to be a successful run in the Airflow DAG at least once to generate the database for clinical trials.</p>
+          </div>
+        </div>
+      </div>
+    </section><!-- /No Data Section -->
+  </main>
+  <!-- Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+
+</html>

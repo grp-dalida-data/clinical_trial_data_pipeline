@@ -1,0 +1,40 @@
+# Use the official Miniconda3 image
+FROM continuumio/miniconda3
+
+# Set environment variables for Conda
+ENV CONDA_ENV=clinical_trial_data_pipeline
+ENV PATH /opt/conda/envs/$CONDA_ENV/bin:$PATH
+
+# Copy environment.yml to create the Conda environment
+COPY environment.yml /tmp/environment.yml
+
+# Create the Conda environment
+RUN conda env create -f /tmp/environment.yml
+
+# Initialize Conda and activate the environment
+RUN echo "source activate $CONDA_ENV" >> ~/.bashrc
+
+# Install necessary packages in the Conda environment
+RUN /bin/bash -c "source activate $CONDA_ENV && pip install flask tqdm dlt dlt[duckdb] transformers openai torch"
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the project files
+COPY clinical_trial_data_pipeline /app
+
+# Copy the .env file
+COPY .env /app/.env
+
+# Set environment variables for Flask
+ENV FLASK_APP=/app/src/models/app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_RUN_PORT=5001
+ENV DUCKDB_FILE_PATH=/opt/airflow/src/data/clinical_trial_data.duckdb
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+
+# Expose the port for Flask
+EXPOSE 5001
+
+# Command to run the Flask app
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5001"]

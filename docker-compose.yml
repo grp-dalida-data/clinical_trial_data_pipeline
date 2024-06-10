@@ -13,11 +13,11 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
-    - ./clinical_trial_data_pipeline/src/dags:/opt/airflow/xdags
+    - ./clinical_trial_data_pipeline/src/dags:/opt/airflow/dags
+    - ./clinical_trial_data_pipeline/src/data:/opt/airflow/src/data
     - ./clinical_trial_data_pipeline/src/logs:/opt/airflow/logs
-    - ./clinical_trial_data_pipeline/src/config:/opt/airflow/config
+    - ./clinical_trial_data_pipeline/src/models:/opt/airflow/src/models
     - ./clinical_trial_data_pipeline/src/plugins:/opt/airflow/plugins
     - ./clinical_trial_data_pipeline/src:/opt/airflow/src
   user: "${AIRFLOW_UID:-50000}:0"
@@ -58,7 +58,7 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
-    command: webserver
+    command: ["bash", "-c", "source activate clinical_trial_data_pipeline && exec airflow webserver"]
     ports:
       - "8080:8080"
     healthcheck:
@@ -75,9 +75,9 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
-    command: scheduler
+    command: ["bash", "-c", "source activate clinical_trial_data_pipeline && exec airflow scheduler"]
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      test: ["CMD", "curl", "--fail", "http://localhost:8793/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -90,7 +90,7 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    command: celery worker
+    command: ["bash", "-c", "source activate clinical_trial_data_pipeline && exec airflow celery worker"]
     healthcheck:
       test:
         - "CMD-SHELL"
@@ -110,7 +110,7 @@ services:
 
   airflow-triggerer:
     <<: *airflow-common
-    command: triggerer
+    command: ["bash", "-c", "source activate clinical_trial_data_pipeline && exec airflow triggerer"]
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 30s
@@ -161,16 +161,18 @@ services:
   flask-app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.flask
     ports:
       - "5001:5001"
-    environment:
-      FLASK_ENV: development
     volumes:
-      - ./clinical_trial_data_pipeline/src:/usr/local/airflow/src
-    command: flask run --host=0.0.0.0 --port=5001
-    depends_on:
-      - airflow-webserver
+    - ./clinical_trial_data_pipeline/src/data:/opt/airflow/data
+    environment:
+      - FLASK_APP=/app/src/models/app.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_RUN_PORT=5001
+      - DUCKDB_FILE_PATH=/opt/airflow/src/data/clinical_trial_data.duckdb
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    command: ["flask", "run", "--host=0.0.0.0", "--port=5001"]
 
 volumes:
   postgres-db-volume:
