@@ -2,6 +2,7 @@
 FROM continuumio/miniconda3
 
 # Create the Conda environment
+
 COPY environment.yml /tmp/environment.yml
 RUN conda env create -f /tmp/environment.yml
 
