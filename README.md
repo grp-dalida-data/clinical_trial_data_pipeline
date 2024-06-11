@@ -8,8 +8,6 @@ This project provides a comprehensive data pipeline for clinical trial data, lev
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Prerequisites
 
@@ -41,12 +39,6 @@ OPENAI_API_KEY=<api_key>
 docker-compose build
 docker-compose up
 
-docker-compose run airflow-webserver airflow db init
-```
-
-4. **Initialize the Airflow database**:
-```sh
-docker-compose run airflow-webserver airflow db init
 ```
 
 Usage
@@ -65,3 +57,12 @@ Run generate_embeddings_and_load.py to generate and load embeddings.
 Access the Flask web application:
 
 Open your browser and navigate to http://localhost:5001 to access the Flask web application for patient-to-trial matching.
+
+## Models Involve
+This project uses the following:
+
+Open AI GPT-3.5 for entity recognition of diseases and medications.
+
+- GPT-3.5 or <a href="https://huggingface.co/Clinical-AI-Apollo/Medical-NER" target="_blank">Clinical-AI-Apollo/Medical-NER</a>from hugging face 
+- Docker Compose
+- Git

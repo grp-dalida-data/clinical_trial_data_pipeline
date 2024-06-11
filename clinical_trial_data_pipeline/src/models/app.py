@@ -45,7 +45,7 @@ def compute_embeddings(sentences):
     return sentence_embeddings
 
 # Check if the DuckDB file exists
-db_file_path = '/opt/airflow/src/data/patient_matching_db.duckdb'
+db_file_path = '/app/src/data/clinical_trial_data.duckdb'
 if not db_file_path:
     app.logger.error("DUCKDB_PATH environment variable is not set.")
     sys.exit(1)
@@ -60,21 +60,49 @@ if db_exists:
     FROM main_data_clinical_trial_data_duckdb.criteria_embeddings;
     """
     df = con.execute(query).fetchdf()
-    df['criteria_embeddings'] = df['criteria_embeddings'].apply(json.loads)
-    stored_embeddings = torch.tensor(df['criteria_embeddings'].tolist())
+    if not df.empty:
+        df['criteria_embeddings'] = df['criteria_embeddings'].apply(json.loads)
+        stored_embeddings = torch.tensor(df['criteria_embeddings'].tolist())
+    else:
+        app.logger.warning("No data found in the filtered_studies table.")
     con.close()
 else:
     app.logger.warning("DuckDB file does not exist. The app will run without the data.")
 
 @app.route('/')
 def index():
-    if not db_exists:
+    if not db_exists or stored_embeddings is None:
         return render_template('no_data.html')
     return render_template('index.html')
 
+@app.route('/list-files')
+def list_files():
+    directory = '/app/src/data'
+    try:
+        files = os.listdir(directory)
+        app.logger.info(f"Files in {directory}: {files}")
+        return render_template('list_files.html', files=files)
+    except FileNotFoundError as e:
+        app.logger.error(f"Error listing files: {e}")
+        return render_template('no_data.html', error="Directory not found")
+
+@app.route('/directory-info')
+def directory_info():
+    current_directory = os.getcwd()
+    parent_directory = os.path.abspath(os.path.join(current_directory, 'src/data'))
+    try:
+        parent_contents = os.listdir(parent_directory)
+        app.logger.info(f"Current directory: {current_directory}")
+        app.logger.info(f"Parent directory: {parent_directory}")
+        app.logger.info(f"Contents of parent directory: {parent_contents}")
+        return render_template('directory_info.html', current_directory=current_directory, parent_directory=parent_directory, parent_contents=parent_contents)
+    except FileNotFoundError as e:
+        app.logger.error(f"Error listing parent directory contents: {e}")
+        return render_template('no_data.html', error="Directory not found")
+
 @app.route('/result', methods=['POST'])
 def result():
-    if not db_exists:
+    if not db_exists or stored_embeddings is None:
         return render_template('no_data.html', error="No data available")
     user_input_sentence = request.form['sentence']
     user_input_embedding = compute_embeddings([user_input_sentence])

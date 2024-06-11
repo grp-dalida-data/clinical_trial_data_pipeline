@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Directory Information</title>
+</head>
+<body>
+    <h1>Directory Information</h1>
+    <h2>Current Directory</h2>
+    <p>{{ current_directory }}</p>
+    <h2>Parent Directory</h2>
+    <p>{{ parent_directory }}</p>
+    <h3>Contents of Parent Directory</h3>
+    <ul>
+        {% for item in parent_contents %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>

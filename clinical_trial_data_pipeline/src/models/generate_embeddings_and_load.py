@@ -72,7 +72,7 @@ try:
     logger.info('Converted embeddings to JSON strings')
 
     # Prepare the data for DLT
-    data = df[['nct_id', 'brief_title', 'criteria_embeddings']].to_dict(orient='records')
+    data = df[['nct_id', 'brief_title','custom_criteria','criteria_embeddings']].to_dict(orient='records')
 
     # Initialize the DataPipeline
     pipeline = DataPipeline(pipeline_name="embedding_pipeline", db_file_path=db_file_path, dataset_name="patient_matching_db")
