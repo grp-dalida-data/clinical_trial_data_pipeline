@@ -59,10 +59,9 @@ Access the Flask web application:
 Open your browser and navigate to http://localhost:5001 to access the Flask web application for patient-to-trial matching.
 
 ## Models Involve
-This project uses the following:
+This project uses the following models for ML/AI Applications:
 
-Open AI GPT-3.5 for entity recognition of diseases and medications.
-
-- GPT-3.5 or <a href="https://huggingface.co/Clinical-AI-Apollo/Medical-NER" target="_blank">Clinical-AI-Apollo/Medical-NER</a>from hugging face 
-- Docker Compose
-- Git
+- GPT-3.5 or <a href="https://huggingface.co/Clinical-AI-Apollo/Medical-NER" target="_blank">Clinical-AI-Apollo/Medical-NER</a> from hugging face
+For Entity Recognition of Diseases and Medications
+- <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2" target="_blank">all-MiniLM-L6-v2</a>
+This is for embeddings/transformers that was used for patient matching.
