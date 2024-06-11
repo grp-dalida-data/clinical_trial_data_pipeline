@@ -1,6 +1,6 @@
 # Clinical Trial Data Pipeline
 
-This project provides a comprehensive data pipeline for clinical trial data, leveraging tools like Apache Airflow, DBT, DuckDB, and Flask. The pipeline processes clinical trial data, generates embeddings, and serves a web application for patient-to-trial matching.
+This project provides a comprehensive data pipeline for clinical trial data, leveraging tools like Apache Airflow, DBT, DuckDB, and Flask and HuggingFace Models. The pipeline processes clinical trial data, generates embeddings, and serves a web application for patient-to-trial matching.
 
 ## Table of Contents
 
