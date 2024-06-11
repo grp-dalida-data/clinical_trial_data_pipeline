@@ -58,7 +58,14 @@ Run DBT models to transform the data.
 Run generate_embeddings_and_load.py to generate and load embeddings.
 Access the Flask web application:
 
-Open your browser and navigate to http://localhost:5001 to access the Flask web application for patient-to-trial matching.
+**Reminder before opening the Flask App**
+- Needed to have successful run for the whole dag at least once, to initialize the data to be used by the flask app.
+- Restart or rerun the
+```sh
+docker-compose up
+```
+Open your browser and navigate to http://localhost:5001 to access the Flask web application for patient-to-trial matching
+
 
 ## Models Involve
 This project uses the following models for ML/AI Applications:
