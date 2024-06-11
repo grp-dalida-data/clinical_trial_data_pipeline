@@ -29,7 +29,7 @@ Before you begin, ensure you have met the following requirements:
    ```
 
 2. **Set up environment variables:**:
-
+Please make a .env file in the root folder:
 ```sh
 DUCKDB_PATH=/opt/airflow/src/data/clinical_trial_data.duckdb
 OPENAI_API_KEY=<api_key>
