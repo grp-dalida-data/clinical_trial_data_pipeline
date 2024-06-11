@@ -67,3 +67,7 @@ This project uses the following models for ML/AI Applications:
 For Entity Recognition of Diseases and Medications
 - <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2" target="_blank">all-MiniLM-L6-v2</a>
 This is for embeddings/transformers that was used for patient matching.
+
+## Some Screenshots
+- Airflow DAG for Running the DLT, DBT and Generating Embeddings
+![alt text](https://github.com/grp-dalida-data/clinical_trial_data_pipeline/tree/main/clinical_trial_data_pipeline/src/static/img/image.png)
