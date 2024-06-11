@@ -71,13 +71,12 @@ For Entity Recognition of Diseases and Medications
 This is for embeddings/transformers that was used for patient matching.
 
 ## Some Screenshots
-- Airflow DAG for Running the DLT, DBT and Generating Embeddings
+**Airflow DAG for Running the DLT, DBT and Generating Embeddings**
 ![alt text](clinical_trial_data_pipeline/src/static/screenshots/image.png)
 
-- Patient Matching Flask App
-
-**Home Page**
+**Patient Matching Flask App**
+- Home Page
 ![alt text](clinical_trial_data_pipeline/src/static/screenshots/index.png)
 
-**Result Page**
+- Result Page
 ![alt text](clinical_trial_data_pipeline/src/static/screenshots/result.png)
