@@ -70,4 +70,4 @@ This is for embeddings/transformers that was used for patient matching.
 
 ## Some Screenshots
 - Airflow DAG for Running the DLT, DBT and Generating Embeddings
-![alt text](https://github.com/grp-dalida-data/clinical_trial_data_pipeline/tree/main/clinical_trial_data_pipeline/src/static/img/image.png)
+![alt text](clinical_trial_data_pipeline/src/static/img/image.png)
