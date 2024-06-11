@@ -60,7 +60,8 @@ Access the Flask web application:
 
 **Reminder before opening the Flask App**
 - Needed to have successful run for the whole dag at least once, to initialize the data to be used by the flask app.
-- Restart or rerun the
+- Restart or rerun the "docker-compose up" again before opening the Flask app.  This is because we use duckdb file. 
+But this will be not needed if we use an database like postgress, etc.
 ```sh
 docker-compose up
 ```
