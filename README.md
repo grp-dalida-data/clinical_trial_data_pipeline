@@ -7,7 +7,9 @@ This project provides a comprehensive data pipeline for clinical trial data, lev
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Project Structure](#project-structure)
+- [Models/AI Involved](#models-involve)
+
+
 
 ## Prerequisites
 
