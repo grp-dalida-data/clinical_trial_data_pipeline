@@ -165,7 +165,7 @@ services:
     ports:
       - "5001:5001"
     volumes:
-    - ./clinical_trial_data_pipeline/src/data:/opt/airflow/data
+    - ./clinical_trial_data_pipeline/src/data:/opt/airflow/src/data
     environment:
       - FLASK_APP=/app/src/models/app.py
       - FLASK_RUN_HOST=0.0.0.0

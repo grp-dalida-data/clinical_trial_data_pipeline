@@ -53,7 +53,7 @@ try:
     logger.info('Connecting to DuckDB and loading data')
     con = duckdb.connect(database=db_file_path)
     query = """
-    SELECT nct_id, brief_title, custom_criteria
+    SELECT nct_id, brief_title, criteria_embeddings
     FROM main_clinical_trial_data.custom_eligibility_criteria;
     """
     df = con.execute(query).fetchdf()

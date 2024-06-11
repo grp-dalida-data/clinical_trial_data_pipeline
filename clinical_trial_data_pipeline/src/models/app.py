@@ -20,6 +20,7 @@ except ModuleNotFoundError as e:
 # Load environment variables from .env file
 load_dotenv()
 
+
 logger = setup_logger(__name__)
 
 # Initialize Flask app
@@ -45,7 +46,8 @@ def compute_embeddings(sentences):
     return sentence_embeddings
 
 # Check if the DuckDB file exists
-db_file_path = '/app/src/data/clinical_trial_data.duckdb'
+# Get the DuckDB file path from the environment variable
+db_file_path = os.getenv('DUCKDB_FILE_PATH', '/opt/airflow/src/data/clinical_trial_data.duckdb')
 if not db_file_path:
     app.logger.error("DUCKDB_PATH environment variable is not set.")
     sys.exit(1)
@@ -56,7 +58,7 @@ stored_embeddings = None
 if db_exists:
     con = duckdb.connect(database=db_file_path)
     query = """
-    SELECT nct_id, brief_title, criteria_embeddings
+    SELECT nct_id, brief_title,criteria_embeddings,
     FROM main_data_clinical_trial_data_duckdb.criteria_embeddings;
     """
     df = con.execute(query).fetchdf()
